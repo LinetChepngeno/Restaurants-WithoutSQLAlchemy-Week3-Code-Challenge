@@ -4,7 +4,8 @@ conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 
 class Restaurant:
-    def __init__(self, name, price):
+    def __init__(self, id, name, price):
+        self.id = id
         self.name = name
         self.price = price
 

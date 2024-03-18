@@ -1,15 +1,15 @@
-from restaurant import Restaurant
-from customer import Customer
-from review import Review
+from models.restaurant import Restaurant
+from models.customer import Customer
+from models.review import Review
 from database import conn, cursor
 
 def main():
     # Create some sample data
-    restaurant1 = Restaurant.create("Pizza Place", 20)
-    restaurant2 = Restaurant.create("Sushi Bar", 30)
+    restaurant1 = Restaurant.create("Sarova Stanley", 20)
+    restaurant2 = Restaurant.create("Pride in", 30)
 
-    customer1 = Customer.create("John", "Doe")
-    customer2 = Customer.create("Jane", "Smith")
+    customer1 = Customer.create("Daisy", "Chebet")
+    customer2 = Customer.create("Leah", "Mokeira")
 
     customer1.add_review(restaurant1, 4)
     customer1.add_review(restaurant2, 3)

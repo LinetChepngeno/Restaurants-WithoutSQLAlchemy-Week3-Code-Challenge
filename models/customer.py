@@ -59,7 +59,7 @@ class Customer:
         return None
 
     def add_review(self, restaurant, rating):
-        from review import Review  # Avoid circular import
+        from models.review import Review  # Avoid circular import
         cursor.execute("INSERT INTO reviews (star_rating, restaurant_id, customer_id) VALUES (?, ?, ?)", (rating, restaurant.id, self.id))
         conn.commit()
 
