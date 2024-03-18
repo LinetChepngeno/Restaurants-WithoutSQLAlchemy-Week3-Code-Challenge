@@ -1,4 +1,7 @@
-import sqlite3
+from . import conn, cursor
+from models.customer import Customer
+from models.restaurant import Restaurant
+import sqlite3 
 
 conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
@@ -17,16 +20,14 @@ class Review:
         row = cursor.fetchone()
         if row:
             # If a row is found, create and return a Review instance
-            return cls(row[0], row[1], row[2], row[3])
+            return cls(row[0], row[1], row[2],)
         return None
 
     def customer(self):
-        from customer import Customer  # Avoid circular import
         # Retrieve the Customer instance associated with the current review
         return Customer.get_by_id(self.customer_id)
 
     def restaurant(self):
-        from restaurant import Restaurant  # Avoid circular import
         # Retrieve the Restaurant instance associated with the current review
         return Restaurant.get_by_id(self.restaurant_id)
 

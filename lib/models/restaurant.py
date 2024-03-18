@@ -1,11 +1,12 @@
-import sqlite3
+from . import conn, cursor
 
 # Connect to the SQLite database
 conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 
 class Restaurant:
-    def __init__(self, name, price):
+    def __init__(self, id, name, price):
+        self.id = id
         self.name = name
         self.price = price
 
@@ -16,7 +17,7 @@ class Restaurant:
         row = cursor.fetchone()
         if row:
             # If a row is found, create and return a Restaurant instance
-            return cls(row[1], row[2])
+            return cls(row[0], row[1], row[2])  # Corrected index
         return None
 
     @classmethod
@@ -24,7 +25,7 @@ class Restaurant:
         # Insert a new restaurant into the database
         cursor.execute("INSERT INTO restaurants (name, price) VALUES (?, ?)", (name, price))
         conn.commit()
-        return cls(name, price)
+        return cls(cursor.lastrowid, name, price)  # Use lastrowid to get the inserted id
 
     def save(self):
         # Update an existing restaurant in the database
@@ -37,13 +38,13 @@ class Restaurant:
         conn.commit()
 
     def reviews(self):
-        from review import Review  # Avoid circular import
+        from .review import Review  # Avoid circular import
         # Retrieve all reviews for the current restaurant
         cursor.execute("SELECT * FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Review.get_by_id(row[0]) for row in cursor.fetchall()]
 
     def customers(self):
-        from customer import Customer  # Avoid circular import
+        from .customer import Customer  # Avoid circular import
         # Retrieve all customers who reviewed the current restaurant
         cursor.execute("SELECT DISTINCT customer_id FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Customer.get_by_id(row[0]) for row in cursor.fetchall()]
@@ -54,11 +55,11 @@ class Restaurant:
         cursor.execute("SELECT * FROM restaurants ORDER BY price DESC LIMIT 1")
         row = cursor.fetchone()
         if row:
-            return Restaurant(row[1], row[2])
+            return Restaurant(row[0], row[1], row[2])
         return None
 
     def all_reviews(self):
-        from review import Review  # Avoid circular import
+        from .review import Review  # Avoid circular import
         reviews = self.reviews()
         # Return a list of formatted strings for all reviews of the current restaurant
         return [review.full_review() for review in reviews]

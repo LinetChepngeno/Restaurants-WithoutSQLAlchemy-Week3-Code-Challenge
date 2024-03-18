@@ -1,7 +1,4 @@
-import sqlite3
-
-conn = sqlite3.connect('restaurant.db')
-cursor = conn.cursor()
+from .models import conn, cursor
 
 class Customer:
     def __init__(self, first_name, last_name):
@@ -36,13 +33,13 @@ class Customer:
         conn.commit()
 
     def reviews(self):
-        from review import Review  # Avoid circular import
+        from .review import Review  # Corrected import statement
         # Retrieve all reviews left by the current customer
         cursor.execute("SELECT * FROM reviews WHERE customer_id = ?", (self.id,))
         return [Review.get_by_id(row[0]) for row in cursor.fetchall()]
 
     def restaurants(self):
-        from restaurant import Restaurant  # Avoid circular import
+        from .restaurant import Restaurant  # Corrected import statement
         # Retrieve all restaurants reviewed by the current customer
         cursor.execute("SELECT DISTINCT restaurant_id FROM reviews WHERE customer_id = ?", (self.id,))
         return [Restaurant.get_by_id(row[0]) for row in cursor.fetchall()]
@@ -63,12 +60,12 @@ class Customer:
         """, (self.id,))
         row = cursor.fetchone()
         if row:
-            from restaurant import Restaurant  # Avoid circular import
+            from .restaurant import Restaurant  # Corrected import statement
             return Restaurant.get_by_id(row[0])
         return None
 
     def add_review(self, restaurant, rating):
-        from review import Review  # Avoid circular import
+        from .review import Review  # Corrected import statement
         # Insert a new review for the current customer and restaurant
         cursor.execute("INSERT INTO reviews (star_rating, restaurant_id, customer_id) VALUES (?, ?, ?)", (rating, restaurant.id, self.id))
         conn.commit()
