@@ -1,16 +1,15 @@
-#!/usr/bin/env python3
-from lib.models.database import conn, cursor
-from models.customer import Customer
-from models.restaurant import Restaurant
-from models.review import Review
+from restaurant import Restaurant
+from customer import Customer
+from review import Review
+from database import conn, cursor
 
 def main():
     # Create some sample data
-    restaurant1 = Restaurant.create("Sarova Stanley", 20)
-    restaurant2 = Restaurant.create("Pride Inn", 30)
+    restaurant1 = Restaurant.create("Pizza Place", 20)
+    restaurant2 = Restaurant.create("Sushi Bar", 30)
 
-    customer1 = Customer.create("Leah", "Mokeira")
-    customer2 = Customer.create("Daisy", "Chebet")
+    customer1 = Customer.create("John", "Doe")
+    customer2 = Customer.create("Jane", "Smith")
 
     customer1.add_review(restaurant1, 4)
     customer1.add_review(restaurant2, 3)
@@ -29,6 +28,7 @@ def main():
     fanciest = Restaurant.fanciest()
     print(fanciest.name, fanciest.price)
 
+    # ... Add more test cases as needed
 
     # Close the database connection
     conn.close()
