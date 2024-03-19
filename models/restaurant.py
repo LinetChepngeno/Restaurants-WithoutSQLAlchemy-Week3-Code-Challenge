@@ -1,4 +1,5 @@
 import sqlite3
+from models.review import Review  
 
 conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
@@ -36,12 +37,12 @@ class Restaurant:
         conn.commit()
 
     def reviews(self):
-        from models.review import Review  # Avoid circular import
+        from models.review import Review 
         cursor.execute("SELECT * FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Review.get_by_id(row[0]) for row in cursor.fetchall()]
 
     def customers(self):
-        from models.customer import Customer  # Avoid circular import
+        #from models.customer import Customer  
         cursor.execute("SELECT DISTINCT customer_id FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Customer.get_by_id(row[0]) for row in cursor.fetchall()]
 
@@ -54,6 +55,6 @@ class Restaurant:
         return None
 
     def all_reviews(self):
-        # from models.review import Review  # Avoid circular import
+        # from models.review import Review  
         reviews = self.reviews()
         return [review.full_review() for review in reviews]

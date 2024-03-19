@@ -31,11 +31,11 @@ class Review:
         return None
 
     def customer(self):
-        from models.customer import Customer  # Avoid circular import
+        from models.customer import Customer 
         return Customer.get_by_id(self.customer_id)
 
     def restaurant(self):
-        from models.restaurant import Restaurant  # Avoid circular import
+        from models.restaurant import Restaurant  
         return Restaurant.get_by_id(self.restaurant_id)
 
     def full_review(self):

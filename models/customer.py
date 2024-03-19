@@ -55,12 +55,12 @@ class Customer:
         """, (self.id,))
         row = cursor.fetchone()
         if row:
-            from models.restaurant import Restaurant  # Avoid circular import
+            from models.restaurant import Restaurant  
             return Restaurant.get_by_id(row[0])
         return None
 
     def add_review(self, restaurant, rating):
-        from models.review import Review  # Avoid circular import
+        from models.review import Review  
         new_review=Review.create(rating, restaurant.id, self.id,)
         return new_review
         
