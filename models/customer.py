@@ -4,7 +4,8 @@ conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 
 class Customer:
-    def __init__(self, first_name, last_name):
+    def __init__(self, first_name, last_name, id=None):
+        self.id = id
         self.first_name = first_name
         self.last_name = last_name
 
@@ -31,12 +32,12 @@ class Customer:
         conn.commit()
 
     def reviews(self):
-        from review import Review  # Avoid circular import
+        from models.review import Review  # Avoid circular import
         cursor.execute("SELECT * FROM reviews WHERE customer_id = ?", (self.id,))
         return [Review.get_by_id(row[0]) for row in cursor.fetchall()]
 
     def restaurants(self):
-        from restaurant import Restaurant  # Avoid circular import
+        from models.restaurant import Restaurant  # Avoid circular import
         cursor.execute("SELECT DISTINCT restaurant_id FROM reviews WHERE customer_id = ?", (self.id,))
         return [Restaurant.get_by_id(row[0]) for row in cursor.fetchall()]
 
@@ -54,14 +55,15 @@ class Customer:
         """, (self.id,))
         row = cursor.fetchone()
         if row:
-            from restaurant import Restaurant  # Avoid circular import
+            from models.restaurant import Restaurant  # Avoid circular import
             return Restaurant.get_by_id(row[0])
         return None
 
     def add_review(self, restaurant, rating):
         from models.review import Review  # Avoid circular import
-        cursor.execute("INSERT INTO reviews (star_rating, restaurant_id, customer_id) VALUES (?, ?, ?)", (rating, restaurant.id, self.id))
-        conn.commit()
+        new_review=Review.create(rating, restaurant.id, self.id,)
+        return new_review
+        
 
     def delete_reviews(self, restaurant):
         cursor.execute("DELETE FROM reviews WHERE customer_id = ? AND restaurant_id = ?", (self.id, restaurant.id))

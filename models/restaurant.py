@@ -4,7 +4,7 @@ conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 
 class Restaurant:
-    def __init__(self, id, name, price):
+    def __init__(self, name, price, id=None):
         self.id = id
         self.name = name
         self.price = price
@@ -21,7 +21,11 @@ class Restaurant:
     def create(cls, name, price):
         cursor.execute("INSERT INTO restaurants (name, price) VALUES (?, ?)", (name, price))
         conn.commit()
-        return cls(name, price)
+       # Get the last inserted row id
+        last_row_id = cursor.lastrowid
+
+        # Return a new instance of Restaurant with the correct id, name, and price
+        return cls(last_row_id, name, price)
 
     def save(self):
         cursor.execute("UPDATE restaurants SET name = ?, price = ? WHERE id = ?", (self.name, self.price, self.id))
@@ -32,12 +36,12 @@ class Restaurant:
         conn.commit()
 
     def reviews(self):
-        from review import Review  # Avoid circular import
+        from models.review import Review  # Avoid circular import
         cursor.execute("SELECT * FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Review.get_by_id(row[0]) for row in cursor.fetchall()]
 
     def customers(self):
-        from customer import Customer  # Avoid circular import
+        from models.customer import Customer  # Avoid circular import
         cursor.execute("SELECT DISTINCT customer_id FROM reviews WHERE restaurant_id = ?", (self.id,))
         return [Customer.get_by_id(row[0]) for row in cursor.fetchall()]
 
@@ -50,6 +54,6 @@ class Restaurant:
         return None
 
     def all_reviews(self):
-        from review import Review  # Avoid circular import
+        # from models.review import Review  # Avoid circular import
         reviews = self.reviews()
         return [review.full_review() for review in reviews]
